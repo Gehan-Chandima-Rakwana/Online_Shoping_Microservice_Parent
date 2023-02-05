@@ -7,6 +7,7 @@ import com.example.orderservice.model.Order;
 import com.example.orderservice.model.OrderLineItems;
 import com.example.orderservice.repository.OrderRepository;
 import com.example.orderservice.service.OrderService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -23,6 +24,7 @@ public class OrderServiceImpl implements OrderService {
     private final OrderRepository orderRepository;
 
     private final WebClient webClient; //already created in config bean
+    @Autowired
     public OrderServiceImpl(OrderRepository orderRepository, WebClient webClient) {
         this.orderRepository = orderRepository;
         this.webClient = webClient;
