@@ -7,6 +7,7 @@ import com.example.orderservice.model.Order;
 import com.example.orderservice.model.OrderLineItems;
 import com.example.orderservice.repository.OrderRepository;
 import com.example.orderservice.service.OrderService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,11 +20,17 @@ import java.util.stream.Collectors;
 
 @Service
 @Transactional
+@Slf4j
 public class OrderServiceImpl implements OrderService {
 
     private final OrderRepository orderRepository;
 
     private final WebClient webClient; //already created in config bean
+
+    @Autowired
+    private WebClient.Builder webClientBuilder;
+
+
     @Autowired
     public OrderServiceImpl(OrderRepository orderRepository, WebClient webClient) {
         this.orderRepository = orderRepository;
@@ -48,16 +55,11 @@ public class OrderServiceImpl implements OrderService {
                 .collect(Collectors.toList());
 
         //Need to call inventory service and need to check the availability of stock
-        InventoryResponseDto[] inventoryResponseArray = webClient.get()
-                                    .uri("http://localhost:8082/api/v1/inventory",
-                                            uriBuilder -> uriBuilder.queryParam("skuCode",skuCodes).build())
-                                    .retrieve()
-                                    .bodyToMono(InventoryResponseDto[].class)
-                                    .block();
+        InventoryResponseDto[] inventoryResponseArray = callInventoryService(skuCodes);
 
-                //by default web client make asynchronous request
-                //there for we use .block() to make it as synchronous
-                //synchronous mean it will waite until response come to execute other codes.
+        //by default web client make asynchronous request
+        //there for we use .block() to make it as synchronous
+        //synchronous mean it will waite until response come to execute other codes.
 
         boolean allProductInStock = Arrays.stream(inventoryResponseArray)
                 .allMatch(InventoryResponseDto::isInStock);
@@ -66,6 +68,18 @@ public class OrderServiceImpl implements OrderService {
             orderRepository.save(order);
         else
             throw new IllegalArgumentException("Product is not in stock");
+    }
+
+    private InventoryResponseDto[] callInventoryService(List<String> skuCodes) {
+        //Need to call inventory service and need to check the availability of stock
+        //instead of webClient.get(), use webClientBuilder.build().get()
+        return webClientBuilder.build().get()
+                //.uri("http://localhost:8082/api/v1/inventory",
+                .uri("http://inventory-service/api/v1/inventory",
+                        uriBuilder -> uriBuilder.queryParam("skuCode",skuCodes).build())
+                .retrieve()
+                .bodyToMono(InventoryResponseDto[].class)
+                .block();
     }
 
     private OrderLineItems mapToDto(OrderLineItemsDto orderLineItemsDto) {
