@@ -12,10 +12,10 @@ import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 @EnableWebSecurity
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
-    @Value("${eureka_username}")
-    private String username;
-    @Value("${eureka_password}")
-    private String password;
+   // @Value("${EUREKA_USERNAME}")
+    private String username = "eureka";
+   // @Value("${EUREKA_PASSWORD}")
+    private String password="password";
 
     @Override
     public void configure(AuthenticationManagerBuilder authenticationManagerBuilder) throws Exception {
