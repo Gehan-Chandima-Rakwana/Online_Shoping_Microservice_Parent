@@ -7,10 +7,12 @@ import com.example.orderservice.model.Order;
 import com.example.orderservice.model.OrderLineItems;
 import com.example.orderservice.repository.OrderRepository;
 import com.example.orderservice.service.OrderService;
+import com.example.orderservice.event.OrderPlaceEvent;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.sleuth.Span;
 import org.springframework.cloud.sleuth.Tracer;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -31,15 +33,18 @@ public class OrderServiceImpl implements OrderService {
 
     private final Tracer tracer;// This is from spring cloud sleuth for declare our own span ID
 
+    private final KafkaTemplate<String,OrderPlaceEvent> kafkaTemplate;
+
     @Autowired
     private WebClient.Builder webClientBuilder;
 
 
     @Autowired
-    public OrderServiceImpl(OrderRepository orderRepository, WebClient webClient, Tracer tracer) {
+    public OrderServiceImpl(OrderRepository orderRepository, WebClient webClient, Tracer tracer, KafkaTemplate<String, OrderPlaceEvent> kafkaTemplate) {
         this.orderRepository = orderRepository;
         this.webClient = webClient;
         this.tracer = tracer;
+        this.kafkaTemplate = kafkaTemplate;
     }
 
 
@@ -97,6 +102,7 @@ public class OrderServiceImpl implements OrderService {
 
             if(allProductInStock) {
                 orderRepository.save(order);
+                kafkaTemplate.send("notificationTopic", new OrderPlaceEvent(order.getOrderNumber()));
                 return "Success";
             }else {
                 throw new IllegalArgumentException("Product is not in stock");
