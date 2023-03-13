@@ -155,11 +155,11 @@ _{
 }_
 
 ```http
-GET => http://localhost:8080/api/v1/product
+  GET  http://localhost:8080/api/v1/product
 ```
 
 ```http
-GET => http://localhost:8080/api/v1/order
+  GET  http://localhost:8080/api/v1/order
 ```
 
 _{
@@ -173,7 +173,7 @@ _{
 }_
 
 ```http
-GET => http://localhost:8080/api/v1/inventory?skuCode=Iphone_12&skuCode=Iphone_12_red
+  GET  http://localhost:8080/api/v1/inventory?skuCode=Iphone_12&skuCode=Iphone_12_red
 ```
 
 # Used Technologies.
@@ -203,5 +203,5 @@ Start Docker Container:
 
 Stop Docker Container:
 ```
-    Command: docker-compose down
+	Command: docker-compose down
 ```
