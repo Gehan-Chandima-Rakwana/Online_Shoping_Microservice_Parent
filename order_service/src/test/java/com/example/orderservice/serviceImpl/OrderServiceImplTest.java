@@ -11,16 +11,16 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class OrderServiceImplTest {
 
-    public static MockWebServer mockBackEnd;
-    @BeforeAll
-    static void setUp() throws IOException {
-        mockBackEnd = new MockWebServer();
-        mockBackEnd.start();
-    }
-    @AfterAll
-    static void tearDown() throws IOException {
-        mockBackEnd.shutdown();
-    }
+//    public static MockWebServer mockBackEnd;
+//    @BeforeAll
+//    static void setUp() throws IOException {
+//        mockBackEnd = new MockWebServer();
+//        mockBackEnd.start();
+//    }
+//    @AfterAll
+//    static void tearDown() throws IOException {
+//        mockBackEnd.shutdown();
+//    }
     @Test
     void placeOrder() {
         //given

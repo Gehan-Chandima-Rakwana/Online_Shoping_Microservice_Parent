@@ -23,7 +23,7 @@ public class InventoryServiceImpl implements InventoryService {
 
     @Override
     @Transactional(readOnly = true)
-    @SneakyThrows // this is used for handle Thread.sleep function throw exception handle. because it is only used when test. this SneakyThrows is not good for production
+   // @SneakyThrows // this is used for handle Thread.sleep function throw exception handle. because it is only used when test. this SneakyThrows is not good for production
     public List<InventoryResponseDto> isInStock(List<String> skuCode) {
             // this code Segment used for the order service circuit breaker example
             // time out function test
